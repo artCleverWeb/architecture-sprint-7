@@ -1,0 +1,32 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+skinparam wrapWidth 300
+LAYOUT_WITH_LEGEND()
+
+Person(person, "Собственник", "Клиент умного дома: шлагбаум и домофон")
+Container(mobile_app, "Мобильное приложение", "iOS/Android")
+
+System_Boundary(smart_service_app, "SmartHomeServiceApp") {
+    Container(smart_home_app, "Smart Home App", "Kotlin, Spring Boot", "Сервис умного дома: шлагбаум и домофон")
+    Container(smart_home_app_db, "Smart Home DB", "PostgreSQL", "База данных умного дома: шлагбаумы и домофоны")
+}
+
+System_Boundary(auth_service_app, "AuthServiceApp") {
+    Container(auth_service_1, "auth_service_1", "Keycloak", "Сервис аутентификации покупателей")
+    Container(auth_service_db, "auth_db_1", "PostgreSQL", "База данных сервиса аутентификации покупателей")
+}
+
+System_Ext(partner_service_smart_home, "Smart Home", "API: шлагбаум и домофон")
+
+Rel(person, mobile_app, "Использование мобильного приложения")
+Rel(mobile_app, smart_home_app, "Отправка команд управления")
+Rel(mobile_app, auth_service_1, "Авторизация \ регистрация")
+
+
+Rel(smart_home_app, partner_service_smart_home, "Данные")
+Rel(smart_home_app, smart_home_app_db, "Данные", "JDBC")
+
+Rel(auth_service_1, auth_service_db, "Данные", "JDBC")
+
+@enduml
